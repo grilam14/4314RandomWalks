@@ -103,10 +103,10 @@ class Random_Walks_Python():
                     plt.scatter(xFoodsEaten, yFoodsEaten, color="red")
                     plt.axis('equal')
 
-                    fig.savefig("figures/animal_"+str(fig_cnt)+".png")
+                    #fig.savefig("figures/animal_"+str(fig_cnt)+".png")
                 efficiency_array[theta_s_i, w_i] = np.divide(np.mean(x[:,-1]-x[:,0]),(v*N))
                 print(efficiency_array[theta_s_i, w_i])
-            #plt.show()
+            plt.show()
         #plt.figure()
         legend_array = []
         w_array_i = np.repeat(w_array,len(efficiency_array))
@@ -167,7 +167,7 @@ class Random_Walks_Python():
 
 rdm_plt = Random_Walks_Python()
 
-dists = ['random', 'uniform', 'cluser']
+dists = ['random', 'uniform', 'cluster']
 j = 1
 for dist in dists:
     rdm_plt.change_distribution(dist)
