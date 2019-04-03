@@ -80,7 +80,7 @@ class Random_Walks_Python():
         realizations = 1 #number of trajectories
         v = 1.0 #velocity (step size)
         #theta_s_array = [round(math.pi/24,4),round(math.pi/12,4),round(math.pi/3,4)] #the width of the random walk turning angle distribution (the lower it is, the more straight the trajectory will be)
-        theta_s_array = [round(math.pi/3,4)]
+        theta_s_array = [round(math.pi/24,4)]
         #w_array = [0.0, 0.5, 1.0] #w is the weighting given to the directional bias (and hence (1-w) is the weighting given to correlated motion)
         w_array = [0.0]
         ratio_theta_s_brw_crw = 1
@@ -105,7 +105,7 @@ class Random_Walks_Python():
 
                     #fig.savefig("figures/animal_"+str(fig_cnt)+".png")
                 efficiency_array[theta_s_i, w_i] = np.divide(np.mean(x[:,-1]-x[:,0]),(v*N))
-                print(efficiency_array[theta_s_i, w_i])
+                #print(efficiency_array[theta_s_i, w_i])
             plt.show()
         #plt.figure()
         legend_array = []
@@ -139,8 +139,26 @@ class Random_Walks_Python():
 
         for realization_i in range(realizations):
             for step_i in range(1,N):
-                theta_crw = theta[realization_i][step_i-1]+(theta_s_crw* 2.0 * (np.random.rand(1,1)-0.5))
-                theta_brw = (theta_s_brw* 2.0 * (np.random.rand(1,1)-0.5))
+
+                if( X[realization_i, step_i-1] >= 100):
+                    theta_crw = -np.pi
+                    theta_brw = -np.pi
+
+                elif( X[realization_i, step_i-1] <= -100):
+                    theta_crw = 0
+                    theta_brw = 0
+
+                elif( Y[realization_i, step_i-1] >= 100):
+                    theta_crw = -1
+                    theta_brw = -1
+
+                elif( Y[realization_i, step_i-1] <= -100):
+                    theta_crw = 1
+                    theta_brw = 1
+
+                else:
+                    theta_crw = theta[realization_i][step_i-1]+(theta_s_crw* 2.0 * (np.random.rand(1,1)-0.5))
+                    theta_brw = (theta_s_brw* 2.0 * (np.random.rand(1,1)-0.5))
 
                 X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (w*math.cos(theta_brw))) + ((1-w) * math.cos(theta_crw))
                 Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v* (w*math.sin(theta_brw))) +((1-w)* math.sin(theta_crw))
@@ -168,10 +186,10 @@ class Random_Walks_Python():
 rdm_plt = Random_Walks_Python()
 
 dists = ['random', 'uniform', 'cluster']
-j = 1
+
 for dist in dists:
     rdm_plt.change_distribution(dist)
     for i in range(1,3):
-        rdm_plt.random_walks(j)
-        j += 1
+        rdm_plt.random_walks(i)
+
 
