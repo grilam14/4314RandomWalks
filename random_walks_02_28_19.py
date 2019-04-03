@@ -64,6 +64,11 @@ class Random_Walks_Python():
                 xRandomCluster.append(np.random.uniform(xrand - clusterRange, xrand + clusterRange, 1))
                 yRandomCluster.append(np.random.uniform(yrand - clusterRange, yrand + clusterRange, 1))
 
+
+        ##USE THIS TO CHANGE DATA STRUCTURE
+
+        xFoodDistribution = xRandomCluster
+        yFoodDistribution = yRandomCluster
         # Our code end
 
         
@@ -73,13 +78,13 @@ class Random_Walks_Python():
             for theta_s_i in range(len(theta_s_array)):
                 theta_s_crw = np.multiply(ratio_theta_s_brw_crw,theta_s_array[theta_s_i])
                 theta_s_brw = theta_s_array[theta_s_i]
-                x,y, xFoodsEaten, yFoodsEaten = self.BRCW(N, realizations, v, theta_s_crw, theta_s_brw, w, xUniform, yUniform, eatRange)
+                x,y, xFoodsEaten, yFoodsEaten = self.BRCW(N, realizations, v, theta_s_crw, theta_s_brw, w, xFoodDistribution, yFoodDistribution, eatRange)
                 if plot_walks == 1:
                     count += 1
                     plt.figure(count)
                     plt.title("w: " + str(w) + " theta: " + str(theta_s_array[theta_s_i]))
                     plt.plot(x.T, y.T)
-                    plt.scatter(xUniform, yUniform)
+                    plt.scatter(xRandomCluster, yRandomCluster)
                     plt.scatter(xFoodsEaten, yFoodsEaten, color="red")
                     plt.axis('equal')
                 efficiency_array[theta_s_i, w_i] = np.divide(np.mean(x[:,-1]-x[:,0]),(v*N))
@@ -126,6 +131,7 @@ class Random_Walks_Python():
                 index = 0;
                 eaten = False
                 for food_x, food_y in zip(xFoods, yFoods):
+                    print(food_x, food_y)
                     # if the animal is within the range of a piece of food
                     if(food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange and food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange):
                         xFoodsEaten.append(food_x)
