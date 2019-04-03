@@ -70,6 +70,8 @@ class Random_Walks_Python():
         xFoodDistribution = xRandomCluster
         yFoodDistribution = yRandomCluster
         # Our code end
+        # Hello world
+    
 
         
         efficiency_array = np.zeros([len(theta_s_array),len(w_array)])
