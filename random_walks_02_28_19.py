@@ -142,10 +142,10 @@ class Random_Walks_Python():
             x_disp = closest_food_coor[0] - curr_x
             y_disp = closest_food_coor[1] - curr_y
             direction = math.atan2(y_disp,x_disp)
-            return 1, direction, direction
+            return 1, direction, direction, 1
 
         else:
-            return 0,1,1
+            return 0,1,1,0
 
 
 #The funciton generate 2D Biased Corrolated Random Walks
@@ -162,7 +162,7 @@ class Random_Walks_Python():
         for realization_i in range(realizations):
             for step_i in range(1,N):
                 
-                foodNear, theta_c, theta_b = self.scent(X[realization_i, step_i-1],
+                foodNear, theta_c, theta_b, r = self.scent(X[realization_i, step_i-1],
                                                         Y[realization_i, step_i-1],
                                                         xFoods, yFoods, 
                                                         xFoodsEaten, yFoodsEaten, scentRange)
@@ -170,18 +170,22 @@ class Random_Walks_Python():
                 if( X[realization_i, step_i-1] >= 100):
                     theta_crw = -np.pi
                     theta_brw = -np.pi
+                    r = w
 
                 elif( X[realization_i, step_i-1] <= -100):
                     theta_crw = 0
                     theta_brw = 0
+                    r = w
 
                 elif( Y[realization_i, step_i-1] >= 100):
                     theta_crw = -np.pi/2
                     theta_brw = -np.pi/2
+                    r = w
 
                 elif( Y[realization_i, step_i-1] <= -100):
                     theta_crw = np.pi/2
                     theta_brw = np.pi/2
+                    r = w
 
                 elif (foodNear):
                     theta_crw = theta_c
@@ -190,9 +194,10 @@ class Random_Walks_Python():
                 else:
                     theta_crw = theta[realization_i][step_i-1]+(theta_s_crw* 2.0 * (np.random.rand(1,1)-0.5))
                     theta_brw = (theta_s_brw* 2.0 * (np.random.rand(1,1)-0.5))
+                    r = w
 
-                X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (w*math.cos(theta_brw))) + ((1-w) * math.cos(theta_crw))
-                Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v* (w*math.sin(theta_brw))) +((1-w)* math.sin(theta_crw))
+                X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (r*math.cos(theta_brw))) + ((1-r) * math.cos(theta_crw))
+                Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v* (r*math.sin(theta_brw))) +((1-r)* math.sin(theta_crw))
 
                 index = 0
                 eaten = False
