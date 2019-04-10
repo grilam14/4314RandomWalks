@@ -86,7 +86,6 @@ class Random_Walks_Python():
         ratio_theta_s_brw_crw = 1
         plot_walks = 1
     
-
         
         efficiency_array = np.zeros([len(theta_s_array),len(w_array)])
         for w_i in range(len(w_array)):
@@ -96,17 +95,20 @@ class Random_Walks_Python():
                 theta_s_brw = theta_s_array[theta_s_i]
                 x,y, xFoodsEaten, yFoodsEaten = self.BRCW(N, realizations, v, theta_s_crw, theta_s_brw, w, self.xFoodDistribution, self.yFoodDistribution, self.eatRange)
                 if plot_walks == 1:
+                    '''
                     fig = plt.figure(fig_cnt)
+
                     plt.title("w: " + str(w) + " theta: " + str(theta_s_array[theta_s_i]))
                     plt.plot(x.T, y.T)
-                    plt.scatter(self.xFoodDistribution, self.yFoodDistribution)
-                    plt.scatter(xFoodsEaten, yFoodsEaten, color="red")
+                    plt.scatter(self.xFoodDistribution, self.yFoodDistribution, zorder=1)
+                    plt.scatter(xFoodsEaten, yFoodsEaten, color="red", zorder=2)
                     plt.axis('equal')
+                    '''
 
                     #fig.savefig("figures/animal_"+str(fig_cnt)+".png")
                 efficiency_array[theta_s_i, w_i] = np.divide(np.mean(x[:,-1]-x[:,0]),(v*N))
                 #print(efficiency_array[theta_s_i, w_i])
-            plt.show()
+            #plt.show()
         #plt.figure()
         legend_array = []
         w_array_i = np.repeat(w_array,len(efficiency_array))
@@ -123,6 +125,7 @@ class Random_Walks_Python():
         plt.legend(loc='best', prop={'size': 5.2})
         plt.show()
         '''
+        return len(xFoodsEaten)/len(self.xFoodDistribution)
 
 
 
@@ -164,14 +167,12 @@ class Random_Walks_Python():
                 Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v* (w*math.sin(theta_brw))) +((1-w)* math.sin(theta_crw))
 
                 index = 0
-                eaten = False
                 for food_x, food_y in zip(xFoods, yFoods):
                     # print(food_x, food_y)
                     # if the animal is within the range of a piece of food
                     if(food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange and food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange):
                         xFoodsEaten.append(food_x)
                         yFoodsEaten.append(food_y)
-                        eaten = True
                         break
                     index+=1
 
@@ -187,9 +188,21 @@ rdm_plt = Random_Walks_Python()
 
 dists = ['random', 'uniform', 'cluster']
 
+N = 2
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
 for dist in dists:
+    ratios = [0] * N
     rdm_plt.change_distribution(dist)
-    for i in range(1,3):
-        rdm_plt.random_walks(i)
+    for i in range(0,N):
+        ratios[i] = rdm_plt.random_walks(i)
+        ax.scatter(dist,ratios[i])
+
+    ax.scatter(dist,ratios[i])
+plt.show()
+
+
+
 
 
