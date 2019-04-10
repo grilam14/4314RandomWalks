@@ -142,7 +142,7 @@ class Random_Walks_Python():
             x_disp = closest_food_coor[0] - curr_x
             y_disp = closest_food_coor[1] - curr_y
             direction = math.atan2(y_disp,x_disp)
-            return 1, direction, direction, 1
+            return 1, direction, direction, 0.75
 
         else:
             return 0,1,1,0
@@ -166,7 +166,7 @@ class Random_Walks_Python():
                                                         Y[realization_i, step_i-1],
                                                         xFoods, yFoods, 
                                                         xFoodsEaten, yFoodsEaten, scentRange)
-                foodNear = 0
+                #foodNear = 0
                 if( X[realization_i, step_i-1] >= 100):
                     theta_crw = -np.pi
                     theta_brw = -np.pi
@@ -197,7 +197,7 @@ class Random_Walks_Python():
                     r = w
 
                 X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (r*math.cos(theta_brw))) + ((1-r) * math.cos(theta_crw))
-                Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v* (r*math.sin(theta_brw))) +((1-r)* math.sin(theta_crw))
+                Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v * (r*math.sin(theta_brw))) + ((1-r)* math.sin(theta_crw))
 
                 index = 0
                 eaten = False
@@ -222,9 +222,9 @@ class Random_Walks_Python():
 rdm_plt = Random_Walks_Python()
 
 
-rdm_plt.change_distribution('random')
-for i in range(1,20):
-    rdm_plt.random_walks(i, plot_walks=0)
+rdm_plt.change_distribution('cluster')
+for i in range(1,4):
+    rdm_plt.random_walks(i)
 
 plt.show()
 
