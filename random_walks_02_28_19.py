@@ -5,11 +5,6 @@ import random
 import pylab
 import collections
 
-'''
-Generate set of points, go through list of points to see if our location is within 1. searching range and
-2. eating range via distance calculation. Apply appropriate logic if it's either are true. 
-
-'''
 
 class Random_Walks_Python():
     def __init__(self):
@@ -59,7 +54,6 @@ class Random_Walks_Python():
 
         self.xFoodDistribution = self.xCluster
         self.yFoodDistribution = self.yCluster
-        # Our code end
         # Hello world
 
     def change_distribution(self, dist_name):
@@ -122,7 +116,6 @@ class Random_Walks_Python():
         for theta_s_i in range(0, len(theta_s_array)):
             legend_array.append(["$\theta^{*CRW}=$", (ratio_theta_s_brw_crw*theta_s_array[theta_s_i]),"$\theta^{*BRW}=$",(theta_s_array[theta_s_i])])
         
-        print(len(xFoodsEaten), len(self.xFoodDistribution))
         return len(xFoodsEaten)/len(self.xFoodDistribution)
 
 
@@ -197,15 +190,15 @@ class Random_Walks_Python():
                 X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (r*math.cos(theta_brw))) + ((1-r) * math.cos(theta_crw))
                 Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v * (r*math.sin(theta_brw))) + ((1-r)* math.sin(theta_crw))
 
-                index = 0
                 for food_x, food_y in zip(xFoods, yFoods):
-                    # print(food_x, food_y)
+
                     # if the animal is within the range of a piece of food
-                    if(food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange and food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange):
+                    if(food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange 
+                    and food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange
+                    and (food_x not in xFoodsEaten) and (food_y not in yFoodsEaten)):
                         xFoodsEaten.append(food_x)
                         yFoodsEaten.append(food_y)
                         break
-                    index+=1
 
                 current_x_disp = X[realization_i][step_i] - X[realization_i][step_i-1]
                 current_y_disp = Y[realization_i][step_i] - Y[realization_i][step_i-1]
@@ -223,6 +216,8 @@ N = 10
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
+# TO DO: Consider what parameters to change/compare, clustered is the superior distribution with current code
+
 for dist in dists:
     ratios = [0] * N
     rdm_plt.change_distribution(dist)
@@ -230,6 +225,7 @@ for dist in dists:
         ratios[i] = rdm_plt.random_walks(i)
         ax.scatter(dist,ratios[i])
 
+plt.ylabel("% food discovered")
 plt.show()    
 
 
