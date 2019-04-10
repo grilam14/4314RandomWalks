@@ -115,16 +115,6 @@ class Random_Walks_Python():
         for theta_s_i in range(0, len(theta_s_array)):
             legend_array.append(["$\theta^{*CRW}=$", (ratio_theta_s_brw_crw*theta_s_array[theta_s_i]),"$\theta^{*BRW}=$",(theta_s_array[theta_s_i])])
 
-        '''
-        plt.xlabel('w')
-        plt.ylabel('navigational efficiency')
-        plt.title('Navigational Efficiency Aggregate')
-        plt.plot(w_array, efficiency_array[0],'bo', label = legend_array[0])
-        #plt.plot(w_array, efficiency_array[1],'go', label = legend_array[1])
-        #plt.plot(w_array, efficiency_array[2],'ro', label = legend_array[2])
-        plt.legend(loc='best', prop={'size': 5.2})
-        plt.show()
-        '''
         return len(xFoodsEaten)/len(self.xFoodDistribution)
 
 
