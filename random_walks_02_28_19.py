@@ -100,17 +100,19 @@ class Random_Walks_Python():
                     
 
                     #fig = plt.figure()
+                    
                     '''
                     plt.title("w: " + str(w) + " theta: " + str(theta_s_array[theta_s_i]))
                     plt.plot(x.T, y.T)
                     plt.scatter(self.xFoodDistribution, self.yFoodDistribution, zorder=1)
                     plt.scatter(xFoodsEaten, yFoodsEaten, color="red", zorder=2)
                     plt.axis('equal')
+                    '''
                     
                     
                     #fig.savefig("figures/animal_"+str(fig_cnt)+".png")
-                    plt.show()
-                    '''
+                    #plt.show()
+                    
         #plt.figure()
         legend_array = []
         for theta_s_i in range(0, len(theta_s_array)):
@@ -157,6 +159,7 @@ class Random_Walks_Python():
                                                         Y[realization_i, step_i-1],
                                                         xFoods, yFoods, 
                                                         xFoodsEaten, yFoodsEaten, scentRange)
+                
                 #foodNear = 0
                 if( X[realization_i, step_i-1] >= 100):
                     theta_crw = -np.pi
@@ -212,21 +215,31 @@ rdm_plt = Random_Walks_Python()
 
 dists = ['random', 'uniform', 'cluster']
 
-N = 10
+N = 50
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 # TO DO: Consider what parameters to change/compare, clustered is the superior distribution with current code
 
+randomHist =[]
+uniformHist =[]
+clusterHist =[]
 for dist in dists:
     ratios = [0] * N
     rdm_plt.change_distribution(dist)
     for i in range(0,N):
         ratios[i] = rdm_plt.random_walks(i)
-        ax.scatter(dist,ratios[i])
+        if(dist == 'random'):
+            randomHist.append(ratios[i])
+        if(dist == 'uniform'):
+            uniformHist.append(ratios[i])
+        else:
+            clusterHist.append(ratios[i]) 
 
-plt.ylabel("% food discovered")
-plt.show()    
+plt.hist([randomHist, uniformHist, clusterHist], bins=9, label=['random', 'uniform','cluster'])
+plt.legend(loc='upper right')
+plt.xlabel("% food discovered")
+plt.show()
 
 
 
