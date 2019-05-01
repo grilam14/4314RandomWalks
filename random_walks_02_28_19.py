@@ -71,7 +71,7 @@ class Random_Walks_Python():
         
 
     def random_walks(self, fig_cnt):
-        N = 500 #no of steps per trajectory
+        N = 1000 #no of steps per trajectory
         realizations = 1 #number of trajectories
         v = 1.0 #velocity (step size)
         #theta_s_array = [round(math.pi/24,4),round(math.pi/12,4),round(math.pi/3,4)] #the width of the random walk turning angle distribution (the lower it is, the more straight the trajectory will be)
@@ -96,22 +96,21 @@ class Random_Walks_Python():
                                                     self.yFoodDistribution, 
                                                     self.eatRange, 
                                                     self.scentRange)
+                '''
                 if plot_walks == 1:
                     
 
-                    #fig = plt.figure()
-                    
-                    '''
+                    fig = plt.figure()
+                  
                     plt.title("w: " + str(w) + " theta: " + str(theta_s_array[theta_s_i]))
-                    plt.plot(x.T, y.T)
+                    plt.plot(x.T, y.T, linewidth=0.75)
                     plt.scatter(self.xFoodDistribution, self.yFoodDistribution, zorder=1)
                     plt.scatter(xFoodsEaten, yFoodsEaten, color="red", zorder=2)
                     plt.axis('equal')
-                    '''
                     
-                    
-                    #fig.savefig("figures/animal_"+str(fig_cnt)+".png")
-                    #plt.show()
+                    fig.savefig("figures/animal_"+str(fig_cnt)+".png")
+                    plt.show()
+                '''
                     
         #plt.figure()
         legend_array = []
@@ -236,6 +235,9 @@ for dist in dists:
         else:
             clusterHist.append(ratios[i]) 
 
+print("random: ", sum(randomHist)/len(randomHist))
+print("uniform: ", sum(uniformHist)/len(uniformHist))
+print("cluster: ", sum(clusterHist)/len(clusterHist))
 plt.hist([randomHist, uniformHist, clusterHist], bins=9, label=['random', 'uniform','cluster'])
 plt.legend(loc='upper right')
 plt.xlabel("% food discovered")
