@@ -4,8 +4,8 @@ import numpy as np
 import random
 import pylab
 import collections
-from BCRW import BCRW
-from Straight import Straight
+from BCRW import BCRW_s, BCRW
+from Straight import Straight, Straight_s 
 
 
 class Random_Walks_Python():
@@ -64,12 +64,12 @@ class Random_Walks_Python():
             self.FoodDistribution = self.Cluster
         
 
-    def random_walks(self, fig_cnt):
+    def random_walks(self, walk):
         N = 1000 #no of steps per trajectory
         realizations = 1 #number of trajectories
         v = 1.0 #velocity (step size)
         #theta_s_array = [round(math.pi/24,4),round(math.pi/12,4),round(math.pi/3,4)] #the width of the random walk turning angle distribution (the lower it is, the more straight the trajectory will be)
-        theta_s_array = [round(math.pi/24,4)]
+        theta_s = round(math.pi/24,4)
         #w_array = [0.0, 0.5, 1.0] #w is the weighting given to the directional bias (and hence (1-w) is the weighting given to correlated motion)
         w_array = [0.0]
         ratio_theta_s_brw_crw = 1
@@ -77,68 +77,45 @@ class Random_Walks_Python():
     
         for w_i in range(len(w_array)):
             w = w_array[w_i]
-            for theta_s_i in range(len(theta_s_array)):
-                theta_s_crw = np.multiply(ratio_theta_s_brw_crw,theta_s_array[theta_s_i])
-                theta_s_brw = theta_s_array[theta_s_i]
-                x,y, FoodsEaten = Straight(N, realizations, v, theta_s_crw, 
-                                            theta_s_brw, w, self.FoodDistribution,
-                                            self.eatRange, self.scentRange)
+            theta_s_crw = np.multiply(ratio_theta_s_brw_crw,theta_s)
+            theta_s_brw = theta_s
 
-                if plot_walks == 1:
-                    
+            x = np.zeros([realizations, N])
+            y = np.zeros([realizations, N])
+            FoodsEaten = []
 
-                    fig = plt.figure()
-                  
-                    plt.title("w: " + str(w) + " theta: " + str(theta_s_array[theta_s_i]))
-                    plt.plot(x.T, y.T, linewidth=0.75)
-                    for val_x, val_y in self.FoodDistribution.values():
-                        plt.scatter(val_x, val_y, color="blue", zorder=1)
-                    plt.scatter([self.FoodDistribution[val][0] for val in FoodsEaten], [self.FoodDistribution[val][1] for val in FoodsEaten], color="red", zorder=2)
-                    plt.axis('equal')
-                    
-                    plt.show()
+            if walk == "BCRW":
+                x, y, FoodsEaten = BCRW(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
+            
+            elif walk == "BCRW_s":
+                x, y, FoodsEaten = BCRW_s(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
+            
+            elif walk == "Straight":
+                x, y, FoodsEaten = Straight(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
+            
+            else:
+                x, y, FoodsEaten = Straight_s(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
+            
+            if plot_walks == 1:
+                
+
+                fig = plt.figure()
+                
+                plt.title("w: " + str(w) + " theta: " + str(theta_s))
+                plt.plot(x.T, y.T, linewidth=0.75)
+                for val_x, val_y in self.FoodDistribution.values():
+                    plt.scatter(val_x, val_y, color="blue", zorder=1)
+                plt.scatter([val[0] for val in FoodsEaten], [val[1] for val in FoodsEaten], color="red", zorder=2)
+                plt.axis('equal')
+                
+                plt.show()
                     
         #plt.figure()
-        legend_array = []
-        for theta_s_i in range(0, len(theta_s_array)):
-            legend_array.append(["$\theta^{*CRW}=$", (ratio_theta_s_brw_crw*theta_s_array[theta_s_i]),"$\theta^{*BRW}=$",(theta_s_array[theta_s_i])])
+        legend_array = ["$\theta^{*CRW}=$", (ratio_theta_s_brw_crw*theta_s),"$\theta^{*BRW}=$",(theta_s)]
+
         
         return len(FoodsEaten)/len(self.FoodDistribution.keys())
 
-
-
-rdm_plt = Random_Walks_Python()
-
-dists = ['random', 'uniform', 'cluster']
-
-N = 100
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
-# TO DO: Consider what parameters to change/compare, clustered is the superior distribution with current code
-
-randomHist =[]
-uniformHist =[]
-clusterHist =[]
-for dist in dists:
-    ratios = [0] * N
-    rdm_plt.change_distribution(dist)
-    for i in range(0,N):
-        ratios[i] = rdm_plt.random_walks(i)
-        if(dist == 'random'):
-            randomHist.append(ratios[i])
-        if(dist == 'uniform'):
-            uniformHist.append(ratios[i])
-        else:
-            clusterHist.append(ratios[i]) 
-
-print("random: ", sum(randomHist)/len(randomHist))
-print("uniform: ", sum(uniformHist)/len(uniformHist))
-print("cluster: ", sum(clusterHist)/len(clusterHist))
-plt.hist([randomHist, uniformHist, clusterHist], bins=9, label=['random', 'uniform','cluster'])
-plt.legend(loc='upper right')
-plt.xlabel("% food discovered")
-plt.show()
 
 
 

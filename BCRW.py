@@ -1,4 +1,11 @@
-def scent(self, curr_x, curr_y, food, eaten, scentRange):
+import matplotlib.pyplot as plt
+import math
+import numpy as np
+import random
+import pylab
+import collections
+
+def scent(curr_x, curr_y, food, eaten, scentRange):
     closest_food_dist = 1000
     closest_food_coor = [-200, -200]
     for x, y in food.values():
@@ -20,7 +27,7 @@ def scent(self, curr_x, curr_y, food, eaten, scentRange):
 
 
 #The funciton generate 2D Biased Corrolated Random Walks
-def BCRW(self, N, realizations, v, theta_s_crw, theta_s_brw,w, Foods, eatRange, scentRange):
+def BCRW_s(N, realizations, v, theta_s_crw, theta_s_brw,w, Foods, eatRange, scentRange):
     X = np.zeros([realizations, N])
     Y = np.zeros([realizations, N])
     theta = np.zeros([realizations, N])
@@ -28,11 +35,12 @@ def BCRW(self, N, realizations, v, theta_s_crw, theta_s_brw,w, Foods, eatRange, 
     Y[:, 0] = 0
     theta[:, 0] = 0
     FoodsEaten = []
+    FoodsID = []
 
     for realization_i in range(realizations):
         for step_i in range(1,N):
             
-            foodNear, theta_c, theta_b, r = self.scent(X[realization_i, step_i-1],
+            foodNear, theta_c, theta_b, r = scent(X[realization_i, step_i-1],
                                                     Y[realization_i, step_i-1],
                                                     Foods, FoodsEaten, scentRange)
             
@@ -69,13 +77,70 @@ def BCRW(self, N, realizations, v, theta_s_crw, theta_s_brw,w, Foods, eatRange, 
             X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (r*math.cos(theta_brw))) + ((1-r) * math.cos(theta_crw))
             Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v * (r*math.sin(theta_brw))) + ((1-r)* math.sin(theta_crw))
 
-            for food_x, food_y in Foods.values():
-
+            for key in Foods.keys():
+                food_x = Foods[key][0]
+                food_y = Foods[key][1]
                 # if the animal is within the range of a piece of food
                 if ((food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange) 
                 and (food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange)
-                and (food_x not in [e[0] for e in FoodsEaten]) and (food_y not in [e[1] for e in FoodsEaten])):
+                and (key not in FoodsID)):
                     FoodsEaten.append([food_x, food_y])
+                    FoodsID.append(key)
+                    break
+
+            current_x_disp = X[realization_i][step_i] - X[realization_i][step_i-1]
+            current_y_disp = Y[realization_i][step_i] - Y[realization_i][step_i-1]
+            current_direction = math.atan2(current_y_disp,current_x_disp)
+
+            theta[realization_i, step_i] = current_direction
+
+    return X, Y, FoodsEaten
+
+def BCRW(N, realizations, v, theta_s_crw, theta_s_brw,w, Foods, eatRange, scentRange):
+    X = np.zeros([realizations, N])
+    Y = np.zeros([realizations, N])
+    theta = np.zeros([realizations, N])
+    X[:, 0] = 0
+    Y[:, 0] = 0
+    theta[:, 0] = 0
+    FoodsEaten = []
+    FoodsID = []
+
+    for realization_i in range(realizations):
+        for step_i in range(1,N):
+
+            if( X[realization_i, step_i-1] >= 100):
+                theta_crw = -np.pi
+                theta_brw = -np.pi
+
+            elif( X[realization_i, step_i-1] <= -100):
+                theta_crw = 0
+                theta_brw = 0
+
+            elif( Y[realization_i, step_i-1] >= 100):
+                theta_crw = -np.pi/2
+                theta_brw = -np.pi/2
+
+            elif( Y[realization_i, step_i-1] <= -100):
+                theta_crw = np.pi/2
+                theta_brw = np.pi/2
+
+            else:
+                theta_crw = theta[realization_i][step_i-1]+(theta_s_crw* 2.0 * (np.random.rand(1,1)-0.5))
+                theta_brw = (theta_s_brw* 2.0 * (np.random.rand(1,1)-0.5))
+
+            X[realization_i, step_i] = X[realization_i][step_i-1] + (v * (w*math.cos(theta_brw))) + ((1-w) * math.cos(theta_crw))
+            Y[realization_i, step_i] = Y[realization_i][step_i-1] + (v * (w*math.sin(theta_brw))) + ((1-w)* math.sin(theta_crw))
+
+            for key in Foods.keys():
+                food_x = Foods[key][0]
+                food_y = Foods[key][1]
+                # if the animal is within the range of a piece of food
+                if ((food_x - eatRange <= X[realization_i, step_i] <= food_x + eatRange) 
+                and (food_y - eatRange <= Y[realization_i, step_i] <= food_y + eatRange)
+                and (key not in FoodsID)):
+                    FoodsEaten.append([food_x, food_y])
+                    FoodsID.append(key)
                     break
 
             current_x_disp = X[realization_i][step_i] - X[realization_i][step_i-1]
