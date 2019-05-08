@@ -28,6 +28,8 @@ class Random_Walks_Python():
 
         self.Cluster = {}
 
+        self.plot_walks = 0
+
         # generate random points
         for i in range(food):
             self.Random[i] = [np.random.uniform(min, max), np.random.uniform(min, max)]
@@ -62,7 +64,9 @@ class Random_Walks_Python():
 
         elif dist_name == "cluster":
             self.FoodDistribution = self.Cluster
-        
+    
+    def change_plot_walks(self):
+        self.plot_walks = (self.plot_walks + 1) % 2
 
     def random_walks(self, walk):
         N = 1000 #no of steps per trajectory
@@ -73,7 +77,6 @@ class Random_Walks_Python():
         #w_array = [0.0, 0.5, 1.0] #w is the weighting given to the directional bias (and hence (1-w) is the weighting given to correlated motion)
         w_array = [0.0]
         ratio_theta_s_brw_crw = 1
-        plot_walks = 0
     
         for w_i in range(len(w_array)):
             w = w_array[w_i]
@@ -84,7 +87,7 @@ class Random_Walks_Python():
             y = np.zeros([realizations, N])
             FoodsEaten = []
 
-            if walk == "BCRW":
+            if walk == "CRW":
                 x, y, FoodsEaten = BCRW(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
             
             elif walk == "BCRW_s":
@@ -96,18 +99,21 @@ class Random_Walks_Python():
             else:
                 x, y, FoodsEaten = Straight_s(N, realizations, v, theta_s_crw, theta_s_brw, w, self.FoodDistribution, self.eatRange, self.scentRange)
             
-            if plot_walks == 1:
+            if self.plot_walks == 1:
                 
 
                 fig = plt.figure()
                 
-                plt.title("w: " + str(w) + " theta: " + str(theta_s))
+                if walk[-2:] == "_s":
+                    plt.title(walk[:-2] + " search strategy with sensory input")
+                else:
+                    plt.title(walk + " search strategy without sensory input")
                 plt.plot(x.T, y.T, linewidth=0.75)
+                plt.plot([-100,100,100,-100,-100],[100,100,-100,-100,100], color="black", linestyle="--")
                 for val_x, val_y in self.FoodDistribution.values():
-                    plt.scatter(val_x, val_y, color="blue", zorder=1)
+                    plt.scatter(val_x, val_y, color="#1f77b4", zorder=1)
                 plt.scatter([val[0] for val in FoodsEaten], [val[1] for val in FoodsEaten], color="red", zorder=2)
                 plt.axis('equal')
-                
                 plt.show()
                     
         #plt.figure()

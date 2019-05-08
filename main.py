@@ -10,10 +10,13 @@ def main():
     rdm_plt = Random_Walks_Python()
 
     dists = ['random', 'uniform', 'cluster']
-    walks = ['BCRW', 'BCRW_s', "Straight", "Straight_s"]
+    walks = ['CRW', 'BCRW_s', "Straight", "Straight_s"]
     N = 100
     fig = plt.figure()
     ax = fig.add_subplot(111)
+
+    #Remove # in the line below if you want to see the walk. It is recommended to reduce N first
+    #rdm_plt.change_plot_walks()
 
     for walk in walks:
 
@@ -36,19 +39,23 @@ def main():
         print("random: ", sum(randomHist)/len(randomHist))
         print("uniform: ", sum(uniformHist)/len(uniformHist))
         print("cluster: ", sum(clusterHist)/len(clusterHist))
-        plt.hist([randomHist, uniformHist, clusterHist], bins=9, label=['random', 'uniform','cluster'], density=True)
+        plt.hist([randomHist, uniformHist, clusterHist], bins=9, label=['random', 'uniform','cluster'])
         plt.legend(loc='upper right')
         plt.xlabel("% food discovered")
-        plt.ylabel("% of time food ratio found")
-        if walk == "BCRW":
-            plt.title("Food found with BCRW w/o scent")
-        if walk == "BCRW_s":
-            plt.title("Food found with BCRW with scent")
-        if walk == "Straight":
-            plt.title("Food found with Straight w/o scent")
-        if walk == "Straight_s":
-            plt.title("Food found with Straight with scent")
+        plt.ylabel("Count")
 
+        if walk == "CRW":
+            plt.title("Food found with CRW w/o scent")
+        elif walk == "BCRW_s":
+            plt.title("Food found with BCRW with scent")
+        elif walk == "Straight":
+            plt.title("Food found with Straight w/o scent")
+        elif walk == "Straight_s":
+            plt.title("Food found with Straight with scent")
+        else:
+            plt.title("Not found")
+
+        #plt.savefig("./figures/Straight_smell.png")
         plt.show()
 
 if __name__ == "__main__":
