@@ -6,6 +6,8 @@ import pylab
 import collections
 from random_walks_02_28_19 import Random_Walks_Python
 
+#Implements a biased a correlated random walk, I wish we workedo on this during this month.
+
 def main():
     rdm_plt = Random_Walks_Python()
 
